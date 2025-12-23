@@ -12,10 +12,31 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
+        $now = now();
+
         Category::insert([
-            ['name' => 'Laptops', 'description' => 'All laptops'],
-            ['name' => 'Accessories', 'description' => 'Computer accessories'],
-            ['name' => 'Mobiles', 'description' => 'Smartphones'],
+            [
+                'name' => 'Laptops', 
+                'description' => 'High performance laptops',
+                // Now points to the local file you downloaded
+                'image' => 'categories/laptops.jpg', 
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'name' => 'Accessories', 
+                'description' => 'Keyboards, mice, and more',
+                'image' => 'categories/accessories.jpg',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
+            [
+                'name' => 'Mobiles', 
+                'description' => 'Latest smartphones',
+                'image' => 'categories/mobiles.jpg',
+                'created_at' => $now,
+                'updated_at' => $now,
+            ],
         ]);
     }
 }

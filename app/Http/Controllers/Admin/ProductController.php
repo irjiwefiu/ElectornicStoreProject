@@ -40,8 +40,10 @@ class ProductController extends Controller
 
         Product::create($validated);
 
-        return redirect()->route('admin.products.index')
-                         ->with('success', 'Product created successfully. Remember to add stock via Purchases.');
+        // ✅ CHANGE MADE HERE: 
+        // Redirect 'back()' so the user stays on the form and sees the alert.
+        return redirect()->back()
+                         ->with('success', 'Product added successfully.');
     }
     
     public function edit(Product $product)

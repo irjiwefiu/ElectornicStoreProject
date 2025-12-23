@@ -9,13 +9,17 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-// ... inside the class
     public function up(): void
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
             $table->string('name', 100)->unique();
             $table->text('description')->nullable();
+            
+            // Stores the path/filename of the image (e.g., 'categories/img01.jpg')
+            // nullable() allows categories to be created without an image
+            $table->string('image')->nullable(); 
+            
             $table->timestamps();
         });
     }
