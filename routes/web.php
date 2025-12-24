@@ -1,18 +1,16 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-
-// Admin Controllers
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\ProductController;
+// Admin Controllers
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\StockAdjustmentController;
 use App\Http\Controllers\Admin\SupplierController;
-
-// Cashier Controllers
 use App\Http\Controllers\Cashier\SaleController;
+use Illuminate\Support\Facades\Auth;
+// Cashier Controllers
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,25 +52,24 @@ Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
-
         // Resources
         Route::resource('categories', CategoryController::class);
         Route::resource('suppliers', SupplierController::class);
         Route::resource('products', ProductController::class);
 
         Route::resource('stock_adjustments', StockAdjustmentController::class)
-            ->except(['edit', 'update', 'show']);
+         ->except(['show']); // We now allow edit, update, and destroy
 
         // --- PURCHASE ROUTES ---
-        
+
         // 1. Custom/Specific routes MUST come before the resource wildcard
         Route::get('purchases/returns/create', [PurchaseController::class, 'createReturn'])
             ->name('purchases.returns.create');
-            
+
         Route::post('purchases/returns', [PurchaseController::class, 'storeReturn'])
             ->name('purchases.returns.store');
 
-        // 2. Standard Resource 
+        // 2. Standard Resource
         // FIX: Removed ->only(...) so 'edit', 'update', and 'destroy' are now created
         Route::resource('purchases', PurchaseController::class);
 
@@ -94,7 +91,6 @@ Route::middleware(['auth', 'role:cashier'])
     ->prefix('cashier')
     ->name('cashier.')
     ->group(function () {
-        
         // POS
         Route::get('/pos', [SaleController::class, 'create'])
             ->name('sales.create');

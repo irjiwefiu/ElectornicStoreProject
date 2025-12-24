@@ -1,12 +1,10 @@
-@extends('layouts.app')
+<?php $__env->startSection('page-title', 'Stock Adjustments'); ?>
 
-@section('page-title', 'Stock Adjustments')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto">
     
-    {{-- Success Message Alert --}}
-    @if(session('success'))
+    
+    <?php if(session('success')): ?>
     <div class="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
@@ -15,14 +13,14 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <p class="text-sm text-green-700">{{ session('success') }}</p>
+                <p class="text-sm text-green-700"><?php echo e(session('success')); ?></p>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Error Message Alert --}}
-    @if(session('error'))
+    
+    <?php if(session('error')): ?>
     <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
@@ -31,14 +29,14 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <p class="text-sm text-red-700">{{ session('error') }}</p>
+                <p class="text-sm text-red-700"><?php echo e(session('error')); ?></p>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        {{-- Card Header --}}
+        
         <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -46,7 +44,7 @@
                 </h2>
                 <p class="text-sm text-gray-500 mt-1">Manual stock corrections and inventory logging.</p>
             </div>
-            <a href="{{ route('admin.stock_adjustments.create') }}" 
+            <a href="<?php echo e(route('admin.stock_adjustments.create')); ?>" 
                class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -55,7 +53,7 @@
             </a>
         </div>
 
-        {{-- Table --}}
+        
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="bg-gray-50 text-gray-500 uppercase font-semibold text-xs">
@@ -69,35 +67,39 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($adjustments as $adj)
+                    <?php $__empty_1 = true; $__currentLoopData = $adjustments; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $adj): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 font-medium text-gray-900">
-                                {{ $adj->product->name }}
+                                <?php echo e($adj->product->name); ?>
+
                             </td>
                             <td class="px-6 py-4">
-                                @if($adj->type === 'increase')
+                                <?php if($adj->type === 'increase'): ?>
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
                                         ↑ Increase
                                     </span>
-                                @else
+                                <?php else: ?>
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
                                         ↓ Decrease
                                     </span>
-                                @endif
+                                <?php endif; ?>
                             </td>
                             <td class="px-6 py-4 font-semibold text-gray-700">
-                                {{ $adj->qty }}
+                                <?php echo e($adj->qty); ?>
+
                             </td>
                             <td class="px-6 py-4 text-gray-500">
-                                {{ Str::limit($adj->reason, 40) }}
+                                <?php echo e(Str::limit($adj->reason, 40)); ?>
+
                             </td>
                             <td class="px-6 py-4 text-gray-500">
-                                {{ $adj->created_at?->format('d M Y') ?? '-' }}
+                                <?php echo e($adj->created_at?->format('d M Y') ?? '-'); ?>
+
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-3">
-                                    {{-- Edit Button --}}
-                                    <a href="{{ route('admin.stock_adjustments.edit', $adj->id) }}" 
+                                    
+                                    <a href="<?php echo e(route('admin.stock_adjustments.edit', $adj->id)); ?>" 
                                        class="text-gray-400 hover:text-blue-600 transition-colors"
                                        title="Edit Adjustment">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -105,12 +107,12 @@
                                         </svg>
                                     </a>
 
-                                    {{-- Delete Form --}}
-                                    <form action="{{ route('admin.stock_adjustments.destroy', $adj->id) }}" 
+                                    
+                                    <form action="<?php echo e(route('admin.stock_adjustments.destroy', $adj->id)); ?>" 
                                           method="POST" 
                                           onsubmit="return confirm('Deleting this log will REVERT the stock from the product inventory. Are you sure?');">
-                                        @csrf
-                                        @method('DELETE')
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
                                         <button type="submit" 
                                                 class="text-gray-400 hover:text-red-600 transition-colors mt-1"
                                                 title="Delete & Revert Stock">
@@ -122,7 +124,7 @@
                                 </div>
                             </td>
                         </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="6" class="px-6 py-10 text-center text-gray-500">
                                 <div class="flex flex-col items-center justify-center">
@@ -134,17 +136,19 @@
                                 </div>
                             </td>
                         </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
         
-        {{-- Pagination --}}
-        @if(method_exists($adjustments, 'links'))
+        
+        <?php if(method_exists($adjustments, 'links')): ?>
         <div class="px-6 py-4 border-t border-gray-100">
-            {{ $adjustments->links() }}
+            <?php echo e($adjustments->links()); ?>
+
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\ElectornicStoreProject\resources\views/admin/stock_adjustments/index.blade.php ENDPATH**/ ?>

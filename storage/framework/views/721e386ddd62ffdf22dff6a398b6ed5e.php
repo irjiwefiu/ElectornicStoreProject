@@ -1,12 +1,10 @@
-@extends('layouts.app')
+<?php $__env->startSection('page-title', 'Suppliers Management'); ?>
 
-@section('page-title', 'Stock Adjustments')
-
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto">
+
     
-    {{-- Success Message Alert --}}
-    @if(session('success'))
+    <?php if(session('success')): ?>
     <div class="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
@@ -15,14 +13,14 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <p class="text-sm text-green-700">{{ session('success') }}</p>
+                <p class="text-sm text-green-700"><?php echo e(session('success')); ?></p>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Error Message Alert --}}
-    @if(session('error'))
+    
+    <?php if(session('error')): ?>
     <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
@@ -31,89 +29,82 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <p class="text-sm text-red-700">{{ session('error') }}</p>
+                <p class="text-sm text-red-700"><?php echo e(session('error')); ?></p>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        {{-- Card Header --}}
+        
         <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
-                    📦 Stock Adjustments
+                    🚚 Suppliers
                 </h2>
-                <p class="text-sm text-gray-500 mt-1">Manual stock corrections and inventory logging.</p>
+                <p class="text-sm text-gray-500 mt-1">Manage vendor contact details and history.</p>
             </div>
-            <a href="{{ route('admin.stock_adjustments.create') }}" 
+            <a href="<?php echo e(route('admin.suppliers.create')); ?>" 
                class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                New Adjustment
+                Add New Supplier
             </a>
         </div>
 
-        {{-- Table --}}
+        
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="bg-gray-50 text-gray-500 uppercase font-semibold text-xs">
                     <tr>
-                        <th class="px-6 py-4">Product</th>
-                        <th class="px-6 py-4">Type</th>
-                        <th class="px-6 py-4">Quantity</th>
-                        <th class="px-6 py-4">Reason</th>
-                        <th class="px-6 py-4">Date</th>
+                        <th class="px-6 py-4">Supplier Name</th>
+                        <th class="px-6 py-4">Phone Number</th>
+                        <th class="px-6 py-4">Email Address</th>
                         <th class="px-6 py-4 text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($adjustments as $adj)
+                    <?php $__empty_1 = true; $__currentLoopData = $suppliers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $supplier): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 font-medium text-gray-900">
-                                {{ $adj->product->name }}
+                                <?php echo e($supplier->name); ?>
+
                             </td>
-                            <td class="px-6 py-4">
-                                @if($adj->type === 'increase')
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">
-                                        ↑ Increase
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">
-                                        ↓ Decrease
-                                    </span>
-                                @endif
+                            <td class="px-6 py-4 text-gray-600">
+                                <?php echo e($supplier->phone ?? 'N/A'); ?>
+
                             </td>
-                            <td class="px-6 py-4 font-semibold text-gray-700">
-                                {{ $adj->qty }}
-                            </td>
-                            <td class="px-6 py-4 text-gray-500">
-                                {{ Str::limit($adj->reason, 40) }}
-                            </td>
-                            <td class="px-6 py-4 text-gray-500">
-                                {{ $adj->created_at?->format('d M Y') ?? '-' }}
+                            <td class="px-6 py-4 text-gray-600">
+                                <?php if($supplier->email): ?>
+                                    <a href="mailto:<?php echo e($supplier->email); ?>" class="text-blue-600 hover:underline">
+                                        <?php echo e($supplier->email); ?>
+
+                                    </a>
+                                <?php else: ?>
+                                    <span class="text-gray-400">N/A</span>
+                                <?php endif; ?>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-3">
-                                    {{-- Edit Button --}}
-                                    <a href="{{ route('admin.stock_adjustments.edit', $adj->id) }}" 
+                                    
+                                    <a href="<?php echo e(route('admin.suppliers.edit', $supplier->id)); ?>" 
                                        class="text-gray-400 hover:text-blue-600 transition-colors"
-                                       title="Edit Adjustment">
+                                       title="Edit Supplier">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                         </svg>
                                     </a>
 
-                                    {{-- Delete Form --}}
-                                    <form action="{{ route('admin.stock_adjustments.destroy', $adj->id) }}" 
+                                    
+                                    <form action="<?php echo e(route('admin.suppliers.destroy', $supplier->id)); ?>" 
                                           method="POST" 
-                                          onsubmit="return confirm('Deleting this log will REVERT the stock from the product inventory. Are you sure?');">
-                                        @csrf
-                                        @method('DELETE')
+                                          onsubmit="return confirm('Are you sure you want to delete \'<?php echo e($supplier->name); ?>\'? This action cannot be undone.');">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
                                         <button type="submit" 
                                                 class="text-gray-400 hover:text-red-600 transition-colors mt-1"
-                                                title="Delete & Revert Stock">
+                                                title="Delete Supplier">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                             </svg>
@@ -122,29 +113,32 @@
                                 </div>
                             </td>
                         </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
-                            <td colspan="6" class="px-6 py-10 text-center text-gray-500">
+                            <td colspan="4" class="px-6 py-10 text-center text-gray-500">
                                 <div class="flex flex-col items-center justify-center">
                                     <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
                                     </svg>
-                                    <p class="text-base font-medium">No adjustments found</p>
-                                    <p class="text-sm mt-1">You haven't made any manual stock changes yet.</p>
+                                    <p class="text-base font-medium">No suppliers found</p>
+                                    <p class="text-sm mt-1">Start by adding your first vendor to the system.</p>
+                                    <a href="<?php echo e(route('admin.suppliers.create')); ?>" class="mt-4 text-blue-600 hover:underline">Add Supplier</a>
                                 </div>
                             </td>
                         </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
         
-        {{-- Pagination --}}
-        @if(method_exists($adjustments, 'links'))
+        
+        <?php if(method_exists($suppliers, 'links')): ?>
         <div class="px-6 py-4 border-t border-gray-100">
-            {{ $adjustments->links() }}
+            <?php echo e($suppliers->links()); ?>
+
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\ElectornicStoreProject\resources\views/admin/suppliers/index.blade.php ENDPATH**/ ?>
