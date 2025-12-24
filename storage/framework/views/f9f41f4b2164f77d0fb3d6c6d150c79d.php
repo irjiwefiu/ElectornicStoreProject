@@ -9,23 +9,30 @@
     <nav class="flex-1 px-3 py-4 space-y-1 text-sm">
 
         <?php if(auth()->guard()->check()): ?>
-
-            <?php
-                $linkBase = 'flex items-center gap-3 px-3 py-2 rounded-lg
-                             transition-all duration-200 transform';
-
-                $active = 'bg-slate-700 text-black text-lg font-extrabold scale-105 shadow-md';
-
-                $inactive = 'text-slate-300 hover:bg-slate-700
-                             hover:text-white hover:font-bold hover:scale-105';
-            ?>
-
-            
             <?php if(auth()->user()->role === 'admin'): ?>
 
+                <?php
+                    $linkBase = 'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 transform';
+                    $active = 'bg-slate-700 text-black text-lg font-extrabold scale-105 shadow-md';
+                    $inactive = 'text-slate-300 hover:bg-slate-700 hover:text-white hover:font-bold hover:scale-105';
+                    // ✅ Directly call the model without "use"
+                    $unreadCount = \App\Models\Alert::where('is_read', false)->count();
+                ?>
+
+                
                 <div class="text-xs uppercase text-slate-400 px-3 mt-2 mb-2 tracking-wider">
                     Management
                 </div>
+
+                
+                <a href="<?php echo e(route('admin.alerts.index')); ?>"
+                   class="<?php echo e($linkBase); ?> <?php echo e(request()->routeIs('admin.alerts.*') ? $active : $inactive); ?> relative">
+                    🔔 <span>Alerts</span>
+                    <?php if($unreadCount > 0): ?>
+                        <span class="absolute top-1 right-2 inline-flex items-center justify-center
+                                     w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                    <?php endif; ?>
+                </a>
 
                 <a href="<?php echo e(route('admin.categories.index')); ?>"
                    class="<?php echo e($linkBase); ?> <?php echo e(request()->routeIs('admin.categories.*') ? $active : $inactive); ?>">
@@ -73,51 +80,30 @@
                 </a>
 
             <?php endif; ?>
-
-            
-            <?php if(auth()->user()->role === 'cashier'): ?>
-
-                <div class="text-xs uppercase text-slate-400 px-3 mt-2 mb-2 tracking-wider">
-                    Sales
-                </div>
-
-                <a href="<?php echo e(route('cashier.sales.create')); ?>"
-                   class="<?php echo e($linkBase); ?> <?php echo e(request()->routeIs('cashier.sales.create') ? $active : $inactive); ?>">
-                    🧾 <span>POS / New Sale</span>
-                </a>
-
-                <a href="<?php echo e(route('cashier.sales.index')); ?>"
-                   class="<?php echo e($linkBase); ?> <?php echo e(request()->routeIs('cashier.sales.index') ? $active : $inactive); ?>">
-                    📜 <span>Sales History</span>
-                </a>
-
-            <?php endif; ?>
-
         <?php endif; ?>
 
     </nav>
 
     
-<?php if(auth()->guard()->check()): ?>
-    <div class="px-3 py-3 border-t border-slate-700">
-        <form method="POST" action="<?php echo e(route('logout')); ?>">
-            <?php echo csrf_field(); ?>
-            <button type="submit"
-                class="w-full flex items-center gap-3 px-3 py-2 rounded-lg
-                       text-slate-300 transition-all duration-200 transform
-                       hover:bg-red-600 hover:text-white hover:scale-105">
-                🚪 <span class="font-semibold">Logout</span>
-            </button>
-        </form>
-    </div>
-<?php endif; ?>
-
-    
     <?php if(auth()->guard()->check()): ?>
-        <div class="px-4 py-3 border-t border-slate-700 text-xs text-slate-400">
-            Logged in as <span class="text-white font-semibold"><?php echo e(auth()->user()->role); ?></span>
-        </div>
+        <?php if(auth()->user()->role === 'admin'): ?>
+            <div class="px-3 py-3 border-t border-slate-700">
+                <form method="POST" action="<?php echo e(route('logout')); ?>">
+                    <?php echo csrf_field(); ?>
+                    <button type="submit"
+                        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg
+                               text-slate-300 transition-all duration-200 transform
+                               hover:bg-red-600 hover:text-white hover:scale-105">
+                        🚪 <span class="font-semibold">Logout</span>
+                    </button>
+                </form>
+            </div>
+
+            
+            <div class="px-4 py-3 border-t border-slate-700 text-xs text-slate-400">
+                Logged in as <span class="text-white font-semibold"><?php echo e(auth()->user()->role); ?></span>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 
-</aside>
-<?php /**PATH C:\xampp\htdocs\ElectornicStoreProject\resources\views/layouts/sidebar.blade.php ENDPATH**/ ?>
+</aside><?php /**PATH C:\xampp\htdocs\ElectornicStoreProject\resources\views/layouts/sidebar.blade.php ENDPATH**/ ?>

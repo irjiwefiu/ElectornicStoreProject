@@ -1,15 +1,16 @@
 <?php
 
+use App\Http\Controllers\Admin\AlertController;
 use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
 // Admin Controllers
+use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\PurchaseController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\StockAdjustmentController;
 use App\Http\Controllers\Admin\SupplierController;
 use App\Http\Controllers\Cashier\SaleController;
-use Illuminate\Support\Facades\Auth;
 // Cashier Controllers
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +28,11 @@ require __DIR__.'/auth.php';
 Route::get('/', function () {
     return redirect()->route('login');
 })->middleware('guest');
+
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::get('alerts', [AlertController::class, 'index'])->name('alerts.index');
+    Route::delete('alerts/{alert}', [AlertController::class, 'destroy'])->name('alerts.destroy');
+});
 
 /*
 |--------------------------------------------------------------------------

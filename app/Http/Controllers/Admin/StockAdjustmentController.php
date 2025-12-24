@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Alert;
 use App\Models\Product;
-use App\Models\StockAdjustment;
+use App\Models\StockAdjustment; // ✅ Import Alert model
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -48,9 +49,17 @@ class StockAdjustmentController extends Controller
                 : $product->decrement('stock_qty', $validated['qty']);
 
             // Create Log
-            StockAdjustment::create($validated + ['user_id' => Auth::id()]);
+            $adjustment = StockAdjustment::create($validated + ['user_id' => Auth::id()]);
 
             DB::commit();
+
+            // 🔔 Create alert
+            Alert::create([
+                'title' => 'Stock Adjustment Added',
+                'message' => "Stock {$validated['type']} of {$validated['qty']} units for product '{$product->name}'. Reason: {$validated['reason']}.",
+                'type' => 'success',
+                'is_read' => false,
+            ]);
 
             return redirect()->route('admin.stock_adjustments.index')->with('success', 'Adjustment saved.');
         } catch (\Exception $e) {
@@ -78,7 +87,7 @@ class StockAdjustmentController extends Controller
 
         DB::beginTransaction();
         try {
-            // 1. REVERT old stock change
+            // REVERT old stock change
             $oldProduct = Product::findOrFail($stockAdjustment->product_id);
             if ($stockAdjustment->type == 'increase') {
                 $oldProduct->decrement('stock_qty', $stockAdjustment->qty);
@@ -86,24 +95,30 @@ class StockAdjustmentController extends Controller
                 $oldProduct->increment('stock_qty', $stockAdjustment->qty);
             }
 
-            // 2. APPLY new stock change
+            // APPLY new stock change
             $newProduct = Product::findOrFail($validated['product_id']);
             if ($validated['type'] == 'decrease' && $newProduct->stock_qty < $validated['qty']) {
-                DB::rollBack(); // Don't allow update if it results in negative stock
+                DB::rollBack();
 
                 return back()->with('error', 'New adjustment would result in negative stock.');
             }
 
-            if ($validated['type'] == 'increase') {
-                $newProduct->increment('stock_qty', $validated['qty']);
-            } else {
-                $newProduct->decrement('stock_qty', $validated['qty']);
-            }
+            $validated['type'] == 'increase'
+                ? $newProduct->increment('stock_qty', $validated['qty'])
+                : $newProduct->decrement('stock_qty', $validated['qty']);
 
-            // 3. Update Log
+            // Update Log
             $stockAdjustment->update($validated + ['user_id' => Auth::id()]);
 
             DB::commit();
+
+            // 🔔 Create alert
+            Alert::create([
+                'title' => 'Stock Adjustment Updated',
+                'message' => "Adjustment updated: {$validated['type']} {$validated['qty']} units for product '{$newProduct->name}'. Reason: {$validated['reason']}.",
+                'type' => 'info',
+                'is_read' => false,
+            ]);
 
             return redirect()->route('admin.stock_adjustments.index')->with('success', 'Adjustment updated and stock corrected.');
         } catch (\Exception $e) {
@@ -117,7 +132,6 @@ class StockAdjustmentController extends Controller
     {
         DB::beginTransaction();
         try {
-            // REVERT stock before deleting log
             $product = Product::findOrFail($stockAdjustment->product_id);
 
             if ($stockAdjustment->type == 'increase') {
@@ -129,6 +143,14 @@ class StockAdjustmentController extends Controller
             $stockAdjustment->delete();
 
             DB::commit();
+
+            // 🔔 Create alert
+            Alert::create([
+                'title' => 'Stock Adjustment Deleted',
+                'message' => "Adjustment deleted: {$stockAdjustment->type} {$stockAdjustment->qty} units for product '{$product->name}'.",
+                'type' => 'warning',
+                'is_read' => false,
+            ]);
 
             return redirect()->route('admin.stock_adjustments.index')->with('success', 'Adjustment deleted and stock reverted.');
         } catch (\Exception $e) {

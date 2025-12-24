@@ -9,23 +9,30 @@
     <nav class="flex-1 px-3 py-4 space-y-1 text-sm">
 
         @auth
-
-            @php
-                $linkBase = 'flex items-center gap-3 px-3 py-2 rounded-lg
-                             transition-all duration-200 transform';
-
-                $active = 'bg-slate-700 text-black text-lg font-extrabold scale-105 shadow-md';
-
-                $inactive = 'text-slate-300 hover:bg-slate-700
-                             hover:text-white hover:font-bold hover:scale-105';
-            @endphp
-
-            {{-- ================= ADMIN ================= --}}
             @if(auth()->user()->role === 'admin')
 
+                @php
+                    $linkBase = 'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 transform';
+                    $active = 'bg-slate-700 text-black text-lg font-extrabold scale-105 shadow-md';
+                    $inactive = 'text-slate-300 hover:bg-slate-700 hover:text-white hover:font-bold hover:scale-105';
+                    // ✅ Directly call the model without "use"
+                    $unreadCount = \App\Models\Alert::where('is_read', false)->count();
+                @endphp
+
+                {{-- ================= ADMIN ================= --}}
                 <div class="text-xs uppercase text-slate-400 px-3 mt-2 mb-2 tracking-wider">
                     Management
                 </div>
+
+                {{-- ALERTS --}}
+                <a href="{{ route('admin.alerts.index') }}"
+                   class="{{ $linkBase }} {{ request()->routeIs('admin.alerts.*') ? $active : $inactive }} relative">
+                    🔔 <span>Alerts</span>
+                    @if($unreadCount > 0)
+                        <span class="absolute top-1 right-2 inline-flex items-center justify-center
+                                     w-3 h-3 bg-red-500 rounded-full animate-pulse"></span>
+                    @endif
+                </a>
 
                 <a href="{{ route('admin.categories.index') }}"
                    class="{{ $linkBase }} {{ request()->routeIs('admin.categories.*') ? $active : $inactive }}">
@@ -73,50 +80,30 @@
                 </a>
 
             @endif
-
-            {{-- ================= CASHIER ================= --}}
-            @if(auth()->user()->role === 'cashier')
-
-                <div class="text-xs uppercase text-slate-400 px-3 mt-2 mb-2 tracking-wider">
-                    Sales
-                </div>
-
-                <a href="{{ route('cashier.sales.create') }}"
-                   class="{{ $linkBase }} {{ request()->routeIs('cashier.sales.create') ? $active : $inactive }}">
-                    🧾 <span>POS / New Sale</span>
-                </a>
-
-                <a href="{{ route('cashier.sales.index') }}"
-                   class="{{ $linkBase }} {{ request()->routeIs('cashier.sales.index') ? $active : $inactive }}">
-                    📜 <span>Sales History</span>
-                </a>
-
-            @endif
-
         @endauth
 
     </nav>
 
     {{-- LOGOUT --}}
-@auth
-    <div class="px-3 py-3 border-t border-slate-700">
-        <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit"
-                class="w-full flex items-center gap-3 px-3 py-2 rounded-lg
-                       text-slate-300 transition-all duration-200 transform
-                       hover:bg-red-600 hover:text-white hover:scale-105">
-                🚪 <span class="font-semibold">Logout</span>
-            </button>
-        </form>
-    </div>
-@endauth
-
-    {{-- FOOTER --}}
     @auth
-        <div class="px-4 py-3 border-t border-slate-700 text-xs text-slate-400">
-            Logged in as <span class="text-white font-semibold">{{ auth()->user()->role }}</span>
-        </div>
+        @if(auth()->user()->role === 'admin')
+            <div class="px-3 py-3 border-t border-slate-700">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                        class="w-full flex items-center gap-3 px-3 py-2 rounded-lg
+                               text-slate-300 transition-all duration-200 transform
+                               hover:bg-red-600 hover:text-white hover:scale-105">
+                        🚪 <span class="font-semibold">Logout</span>
+                    </button>
+                </form>
+            </div>
+
+            {{-- FOOTER --}}
+            <div class="px-4 py-3 border-t border-slate-700 text-xs text-slate-400">
+                Logged in as <span class="text-white font-semibold">{{ auth()->user()->role }}</span>
+            </div>
+        @endif
     @endauth
 
 </aside>

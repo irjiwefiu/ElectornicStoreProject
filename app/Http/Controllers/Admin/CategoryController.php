@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Models\Alert;
+use App\Models\Category; // Import Alert model
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage; // Import Storage facade
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
     public function index()
     {
         $categories = Category::withCount('products')->get();
+
         return view('admin.categories.index', compact('categories'));
     }
 
@@ -25,19 +27,24 @@ class CategoryController extends Controller
         $validated = $request->validate([
             'name' => 'required|unique:categories|max:100',
             'description' => 'nullable|max:255',
-            // Validate the image: must be an image file, max 2MB
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', 
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
-        // Handle Image Upload
         if ($request->hasFile('image')) {
-            // Stores in 'storage/app/public/categories'
-            $filePath = $request->file('image')->store('categories', 'public'); 
+            $filePath = $request->file('image')->store('categories', 'public');
             $validated['image'] = $filePath;
         }
 
-        Category::create($validated);
-        
+        $category = Category::create($validated);
+
+        // 🔔 Create alert
+        Alert::create([
+            'title' => 'New Category Added',
+            'message' => "Category '{$category->name}' has been created.",
+            'type' => 'success',
+            'is_read' => false,
+        ]);
+
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category added successfully.');
     }
@@ -50,24 +57,29 @@ class CategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'name' => 'required|max:100|unique:categories,name,' . $category->id,
+            'name' => 'required|max:100|unique:categories,name,'.$category->id,
             'description' => 'nullable|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10000',
         ]);
 
-        // Handle Image Upload
         if ($request->hasFile('image')) {
-            // 1. Delete the old image if it exists
             if ($category->image && Storage::disk('public')->exists($category->image)) {
                 Storage::disk('public')->delete($category->image);
             }
 
-            // 2. Store the new image
             $filePath = $request->file('image')->store('categories', 'public');
             $validated['image'] = $filePath;
         }
 
         $category->update($validated);
+
+        // 🔔 Create alert
+        Alert::create([
+            'title' => 'Category Updated',
+            'message' => "Category '{$category->name}' has been updated.",
+            'type' => 'info',
+            'is_read' => false,
+        ]);
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category updated successfully.');
@@ -79,12 +91,20 @@ class CategoryController extends Controller
             return back()->with('error', 'Cannot delete category with existing products.');
         }
 
-        // Delete the associated image from storage before deleting the record
         if ($category->image && Storage::disk('public')->exists($category->image)) {
             Storage::disk('public')->delete($category->image);
         }
 
+        $categoryName = $category->name;
         $category->delete();
+
+        // 🔔 Create alert
+        Alert::create([
+            'title' => 'Category Deleted',
+            'message' => "Category '{$categoryName}' has been deleted.",
+            'type' => 'warning',
+            'is_read' => false,
+        ]);
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category deleted successfully.');

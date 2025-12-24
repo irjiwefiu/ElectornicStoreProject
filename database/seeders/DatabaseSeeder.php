@@ -4,6 +4,8 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
+// ✅ Import all seeder classes
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -21,6 +23,7 @@ class DatabaseSeeder extends Seeder
             StockAdjustmentSeeder::class,
             SaleSeeder::class,
             SaleItemSeeder::class,
+            AlertSeeder::class,
         ]);
     }
 }
