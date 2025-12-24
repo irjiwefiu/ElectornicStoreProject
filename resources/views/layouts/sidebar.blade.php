@@ -15,8 +15,14 @@
                     $linkBase = 'flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 transform';
                     $active = 'bg-slate-700 text-black text-lg font-extrabold scale-105 shadow-md';
                     $inactive = 'text-slate-300 hover:bg-slate-700 hover:text-white hover:font-bold hover:scale-105';
-                    // ✅ Directly call the model without "use"
-                    $unreadCount = \App\Models\Alert::where('is_read', false)->count();
+                    $unreadCount = 0;
+                    try {
+                        if (\Illuminate\Support\Facades\Schema::hasTable('alerts')) {
+                            $unreadCount = \App\Models\Alert::where('is_read', false)->count();
+                        }
+                    } catch (\Exception $e) {
+                        $unreadCount = 0;
+                    }
                 @endphp
 
                 {{-- ================= ADMIN ================= --}}

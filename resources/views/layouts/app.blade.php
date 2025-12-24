@@ -12,7 +12,6 @@
 <div class="flex min-h-screen">
     {{-- Sidebar --}}
     @include('layouts.sidebar')
-
     {{-- Main Content --}}
     <div class="flex-1 flex flex-col">
         {{-- Navbar --}}

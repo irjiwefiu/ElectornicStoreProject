@@ -6,7 +6,7 @@
                 <option value="{{ $product->id }}"
                         data-cost="{{ $product->cost_price }}"
                         @selected(old("items.$index.product_id")==$product->id)>
-                    {{ $product->name }} — ${{ number_format($product->cost_price,2) }}
+                    {{ $product->name }} — ₨ {{ number_format($product->cost_price,2) }}
                 </option>
             @endforeach
         </select>

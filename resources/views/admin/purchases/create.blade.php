@@ -111,7 +111,7 @@
     {{-- FOOTER --}}
     <div class="flex justify-between items-center mt-6">
         <h3 class="text-lg font-bold">
-            Grand Total: Rs <span id="grandTotal">0.00</span>
+            Grand Total: ₨ <span id="grandTotal">0.00</span>
         </h3>
 
         <button type="submit"

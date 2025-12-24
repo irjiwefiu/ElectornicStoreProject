@@ -11,7 +11,7 @@
         <tr>
             <td>{{ $item->product->name }}</td>
             <td class="text-center">{{ $item->qty }}</td>
-            <td class="text-right">Rs {{ $item->subtotal }}</td>
+            <td class="text-right">₨ {{ $item->subtotal }}</td>
         </tr>
         @endforeach
     </table>
@@ -20,17 +20,17 @@
 
     <div class="flex justify-between font-bold mt-2">
         <span>Total</span>
-        <span>Rs {{ $sale->total }}</span>
+        <span>₨ {{ $sale->total }}</span>
     </div>
 
     <div class="flex justify-between text-sm">
         <span>Paid</span>
-        <span>Rs {{ $sale->paid_amount }}</span>
+        <span>₨ {{ $sale->paid_amount }}</span>
     </div>
 
     <div class="flex justify-between text-sm mb-4">
         <span>Change</span>
-        <span>Rs {{ $sale->change_return }}</span>
+        <span>₨ {{ $sale->change_return }}</span>
     </div>
 
     <button onclick="printReceipt()"

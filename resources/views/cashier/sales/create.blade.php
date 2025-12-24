@@ -19,7 +19,7 @@
                     class="border rounded-lg p-3 hover:bg-gray-100 text-left transition">
                     <div class="font-semibold">{{ $product->name }}</div>
                     <div class="text-sm text-gray-500">
-                        Rs {{ number_format($product->sale_price) }}
+                        ₨ {{ number_format($product->sale_price) }}
                     </div>
                 </button>
             @endforeach
@@ -45,7 +45,7 @@
         {{-- TOTAL --}}
         <div class="flex justify-between font-bold mb-2">
             <span>Subtotal</span>
-            <span>Rs <span id="subtotal">0</span></span>
+            <span>₨ <span id="subtotal">0</span></span>
         </div>
 
         {{-- PAID --}}
@@ -59,7 +59,7 @@
         {{-- CHANGE --}}
         <div class="flex justify-between font-bold mb-4">
             <span>Change</span>
-            <span>Rs <span id="change">0</span></span>
+            <span>₨ <span id="change">0</span></span>
         </div>
 
         {{-- HIDDEN INPUTS --}}
@@ -118,7 +118,7 @@ function renderCart() {
                         onchange="updateQty(${item.product_id}, this.value)"
                         class="w-14 border rounded px-1">
                 </td>
-                <td>Rs ${lineTotal}</td>
+                <td>₨ ${lineTotal}</td>
                 <td>
                     <button type="button" onclick="removeItem(${item.product_id})"
                         class="text-red-500 font-bold">×</button>
